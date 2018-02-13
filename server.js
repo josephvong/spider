@@ -18,32 +18,24 @@ db.once('open', function () {
 });
 
 
-var superagent = require('superagent') // 引入 superagent库
-var cheerio = require('cheerio') // html节点操作库
+var spider = require('./spider/spider')
 
+//var superagent = require('superagent') // 引入 superagent库
+//var cheerio = require('cheerio') // html节点操作库
+ 
 
-app.get('/', function (req, res) {
-  //res.send('Hello World!');
-  superagent.get('https://search.jd.com/Search')
-    .set({Accept:'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'})
-    .query({
-      keyword:'威士忌',
-      enc:'utf-8',
-      wq:'威士忌',
-      pvid:'bed31552e7c24ce48f5c847d2172179a'
-    })
-    .end((err,sres)=>{ 
-      var arr = [];
-      var $ = cheerio.load(sres.text);
-      $('#J_goodsList ul.gl-warp>li .p-name a').each((index,item)=>{
-        var $elem = $(item)
-        arr.push({
-          title: $elem.attr('title')
-        })
-      }) 
-
-      res.send(arr)
-    })
+app.get('/', function (Req, Res) {
+  //res.send('hello world') 
+  spider.promoSellSpider().then((res)=>{
+    //console.log(res.value)
+    let data = JSON.parse(res)
+    let value = JSON.parse(data.value)
+    let list = value.wareList.wareList
+    Res.send(list)
+  }).catch((err)=>{
+     Res.send('err')
+  })
+  
 });
   
 
