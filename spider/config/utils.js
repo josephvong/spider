@@ -9,9 +9,16 @@ const selfSend = {
 const promoSell = {
 
   _format_:'json',
-  page:2,
-  //sort:1, // 销量排序
+  page:1, 
   configuredFilters:[{"bodyValues":"1","bodyKey":"promotion"}], // 京东配送
+  keyword:'威士忌'
+}
+
+const baseParm = {
+  _format_:'json',
+  page:1,
+  //sort:1, // 销量排序
+  //configuredFilters:[{"bodyValues":"1","bodyKey":"promotion"}], // 京东配送
   keyword:'威士忌'
 }
 
@@ -28,6 +35,7 @@ module.exports = {
     'X-Requested-With':'XMLHttpRequest'
   },
   spiderParams:{
+    baseParm:baseParm,
     selfSend: selfSend,  // 威士忌 + 京东配送 (销量排序)
     promoSell: promoSell // 威士忌 + 促销 (销量排序)
   }

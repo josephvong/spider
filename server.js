@@ -20,23 +20,32 @@ db.once('open', function () {
 
 var spider = require('./spider/spider')
 
-//var superagent = require('superagent') // 引入 superagent库
+var superagent = require('superagent') // 引入 superagent库
 //var cheerio = require('cheerio') // html节点操作库
- 
+
+
 
 app.get('/', function (Req, Res) {
-  //res.send('hello world') 
-  spider.promoSellSpider().then((res)=>{
-    //console.log(res.value)
+  spider.recurSpider().then((res)=>{
+    Res.send(res)
+  }) 
+  
+  /*spider.promoSellSpider().then((res)=>{ 
     let data = JSON.parse(res)
     let value = JSON.parse(data.value)
     let list = value.wareList.wareList
+    let names = list.map((item)=>{
+      return item.wname
+    })
     Res.send(list)
   }).catch((err)=>{
-     Res.send('err')
-  })
+    Res.send('err')
+  })*/
+   
+   
   
 });
   
 
 app.listen(3000);
+
