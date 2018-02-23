@@ -1,75 +1,82 @@
 const fs = require('fs');
+let superagent = require('superagent') // 引入 superagent库
+const setting= require('./config/utils') 
 
-const setting= require('./config/utils')
-const config = require('./config/index')
+const baseParm = setting.spiderParams.baseParm // 默认  
+const reqUrl = 'https://so.m.jd.com/ware/searchList.action'// 爬取的 api
+ 
 
-const baseParm = setting.spiderParams.baseParm // 默认
-const promoSell = setting.spiderParams.promoSell // 促销
-const selfSend = setting.spiderParams.selfSend  // 自送
-// 爬取的 api
-const reqUrl = 'https://so.m.jd.com/ware/searchList.action'
+function fetch_data(url,queryParams){
+  return new Promise((resolve,reject)=>{
+    superagent.post(url)
+    .type('form')
+    .send(queryParams)
+    .end((err,sres)=>{ 
+      err?reject(err):resolve(sres.text) 
+    })
+  })
+}
 
-let promoSellList = [];
-let selfSendList = [];
-
+// 获取
+function totalMount(){
+  return new Promise((resolve,reject)=>{
+    return fetch_data(reqUrl,baseParm).then((res)=>{
+      let data = JSON.parse(res)
+      let value = JSON.parse(data.value)
+      let wlist = value.wareList 
+      resolve(wlist.wareCount)  //
+    }).catch((err)=>{
+      reject(err)
+    })
+  })
+}
 
 function listSpider(page){
   let params = {page:page,...baseParm}   
-  return config.fetch_data(reqUrl,params)  
-}
-
-function promoSellSpider(){   
-  return config.fetch_data(reqUrl,promoSell)  
-}
+  return fetch_data(reqUrl,params)  
+} 
 
 function dataFilter(res){
   let data = JSON.parse(res)
   let value = JSON.parse(data.value)
   let wlist = value.wareList.wareList
-  let list = wlist.filter((item)=>{
-    return item.secKill == true
-  })
-  /*let names = list.map((item)=>{
-    return item.wname
-  })*/
-  return list
+
+  return wlist
 }
 
-function recurSpider(){
+
+
+async function recurSpider(){
+  let total = await totalMount()
   return new Promise((result,reject)=>{
     let index = 1
+    let num = 0
     let list = []
     function getData(){
-      if(index >= 10){ 
+      if(index >= 20){
+      //if(num >= total/10){  
         result(list)
         return 
       }
       setTimeout(()=>{
         listSpider(index).then((res)=>{
-          index += 1
+          index += 1  // 翻页
           let tmp = dataFilter(res)
-          list = list.concat(tmp) 
-          console.log('ok:' + index)
+          num += tmp.length
+          let secKill = tmp.filter((item)=>{
+            return item.secKill == true
+          })
+          list = list.concat(secKill) 
+          console.log('ok:' + num)
           getData()
         })
-      },2000)
+      },300)
     }
     getData()
   }) 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-exports.promoSellSpider = promoSellSpider
-exports.recurSpider = recurSpider
-//exports.firstSpider = firstSpider
+exports.totalMount = totalMount 
+ 
+exports.recurSpider = recurSpider 

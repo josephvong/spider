@@ -1,25 +1,7 @@
-// 威士忌 + 销量 + 京东配送
-const selfSend = {
-  _format_:'json',
-  //sort:1, // 销量排序
-  configuredFilters:[{"bodyValues":"1","bodyKey":"self"}], // 京东配送
-  keyword:'威士忌'
-}
-// 威士忌 + 销量 + 促销
-const promoSell = {
-
-  _format_:'json',
-  page:1, 
-  configuredFilters:[{"bodyValues":"1","bodyKey":"promotion"}], // 京东配送
-  keyword:'威士忌'
-}
-
 const baseParm = {
-  _format_:'json',
-  page:1,
-  //sort:1, // 销量排序
-  //configuredFilters:[{"bodyValues":"1","bodyKey":"promotion"}], // 京东配送
-  keyword:'威士忌'
+  _format_:'json', 
+  //keyword:'威士忌'
+  categoryId:9438 //葡萄酒
 }
 
 module.exports = {
@@ -35,9 +17,7 @@ module.exports = {
     'X-Requested-With':'XMLHttpRequest'
   },
   spiderParams:{
-    baseParm:baseParm,
-    selfSend: selfSend,  // 威士忌 + 京东配送 (销量排序)
-    promoSell: promoSell // 威士忌 + 促销 (销量排序)
+    baseParm:baseParm
   }
 } 
 

@@ -8,7 +8,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(morgan('dev')); 
 
-var dburl = 'mongodb://127.0.0.1:27017/spiderDB'
+// 数据库 连接
+var dburl = 'mongodb://127.0.0.1:27017/myDB'
 var mongoose = require('mongoose')
 mongoose.connect(dburl)
 
@@ -18,32 +19,16 @@ db.once('open', function () {
 });
 
 
-var spider = require('./spider/spider')
+//--------------爬取数据------------------ 
+var spider = require('./spider')
+//spider.spiderDataSave()
+//spider.timeTask()
 
-var superagent = require('superagent') // 引入 superagent库
-//var cheerio = require('cheerio') // html节点操作库
-
-
+let apiRouter = require('./routes/redwine')
+app.use('/api',apiRouter)
 
 app.get('/', function (Req, Res) {
-  spider.recurSpider().then((res)=>{
-    Res.send(res)
-  }) 
-  
-  /*spider.promoSellSpider().then((res)=>{ 
-    let data = JSON.parse(res)
-    let value = JSON.parse(data.value)
-    let list = value.wareList.wareList
-    let names = list.map((item)=>{
-      return item.wname
-    })
-    Res.send(list)
-  }).catch((err)=>{
-    Res.send('err')
-  })*/
-   
-   
-  
+  Res.send('ok') 
 });
   
 
